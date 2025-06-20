@@ -12,6 +12,7 @@ void  dlxMatrixInit(DlxMatrix* dlx, size_t rowSize) {
   dlx->solution.rowsSize = 0;
   dlx->solution.rowsCapacity = 0;
   dlx->searchDepth = 0;
+  dlx->totalSolutionFound = 0;
 
   dlx->headers = malloc(sizeof(QListHeader) * rowSize);
   assert(dlx->headers != NULL);
@@ -123,6 +124,7 @@ void  dlxSolutionCpy(DlxSolution* solCpy, const DlxSolution* solution) {
 void  dlxSearchFull(DlxMatrix* dlx) {
   static QList*  rowOrder[200];
   if (dlx->root.r == &dlx->root) {
+    dlx->totalSolutionFound += 1;
     for (size_t r = 0; r < dlx->solution.rowsSize; r++) {
       QList* row = dlx->solution.rows[r];
       while (row->l < row) {row = row->l;}

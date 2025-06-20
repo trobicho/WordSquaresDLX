@@ -199,6 +199,8 @@ int main(int ac, char** av) {
 
   dlxSearchFull(&dlx);
 
+  printf("Total Solution Found = %lu", dlx.totalSolutionFound);
+
   dlxAllocatorFree(&dlxAllocator);
   dlxMatrixFree(&dlx);
   return (0);

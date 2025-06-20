@@ -47,6 +47,7 @@ struct  DlxMatrix {
 
   size_t        rowSize;
   size_t        rowCount;
+  size_t        totalSolutionFound;
   
   int           searchDepth;
 };
