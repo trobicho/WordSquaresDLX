@@ -121,11 +121,12 @@ void  dlxSolutionCpy(DlxSolution* solCpy, const DlxSolution* solution) {
 }
 
 void  dlxSearchFull(DlxMatrix* dlx) {
+  static QList*  rowOrder[200];
   if (dlx->root.r == &dlx->root) {
     for (size_t r = 0; r < dlx->solution.rowsSize; r++) {
       QList* row = dlx->solution.rows[r];
       while (row->l < row) {row = row->l;}
-      row = row->r;
+      row = row;
       QList* rowTmp = row->r;
       size_t size = 1;
       while (rowTmp != row) {
@@ -134,6 +135,10 @@ void  dlxSearchFull(DlxMatrix* dlx) {
       }
       if (size > dlx->solution.letterPerWord + 3 || size <= 1)
         continue;
+      rowOrder[row->header->id] = row;
+    }
+    for (size_t r = 0; r < dlx->solution.letterPerWord; r++) {
+      QList* row = rowOrder[r]->r;
       for (size_t c = 0; c < dlx->solution.letterPerWord; c++) {
         char letter = row->header->id;
         row = row->r;
