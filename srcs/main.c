@@ -194,8 +194,8 @@ int main(int ac, char** av) {
   fclose(dictionary);
   printf("Total Word Count = %d\n", wordCount);
   dlxSetup(&dlxAllocator, &dlx, wordChunk, letterPerWord, wordCount, unique);
-  printf("---------------DLX AS INIT--------------\n");
   wordChunkFree(wordChunk);
+  printf("---------------DLX AS INIT--------------\n");
 
   dlxSearchFull(&dlx);
 

@@ -122,7 +122,6 @@ void  dlxSolutionCpy(DlxSolution* solCpy, const DlxSolution* solution) {
 
 void  dlxSearchFull(DlxMatrix* dlx) {
   if (dlx->root.r == &dlx->root) {
-    printf("found solution\n");
     for (size_t r = 0; r < dlx->solution.rowsSize; r++) {
       QList* row = dlx->solution.rows[r];
       while (row->l < row) {row = row->l;}
@@ -147,6 +146,13 @@ void  dlxSearchFull(DlxMatrix* dlx) {
   }
 
   QListHeader* col = dlx->root.r;
+  int         minSize = col->size;
+  for (QListHeader* colMin = col->r; colMin != &dlx->root; colMin = colMin->r) {
+    if (colMin->size < minSize) {
+      minSize = colMin->size;
+      col = colMin;
+    }
+  }
   dlxCoverColumn(dlx, col);
 
   for (QList* row = col->d; row != (QList*)col; row = row->d) {
