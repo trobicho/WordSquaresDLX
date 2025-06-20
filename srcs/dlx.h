@@ -34,6 +34,7 @@ struct  DlxSolution {
   QList**       rows;
   size_t        rowsSize;
   size_t        rowsCapacity;
+  size_t        letterPerWord;
 };
 
 typedef struct  DlxMatrix DlxMatrix;

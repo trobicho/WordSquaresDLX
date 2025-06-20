@@ -1,6 +1,7 @@
 #include "dlx.h"
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 //-----------------Initialization--------------------
 void  dlxMatrixInit(DlxMatrix* dlx, size_t rowSize) {
@@ -15,7 +16,7 @@ void  dlxMatrixInit(DlxMatrix* dlx, size_t rowSize) {
   dlx->headers = malloc(sizeof(QListHeader) * rowSize);
   assert(dlx->headers != NULL);
   QListHeader*  prev = &dlx->root;
-  for (int i = 0; i < rowSize; i++) {
+  for (size_t i = 0; i < rowSize; i++) {
     QListHeader*  header = &dlx->headers[i];
     header->u = (QList*)header;
     header->d = (QList*)header;
@@ -95,11 +96,13 @@ static inline void  dlxSolutionRemove(DlxSolution* solution) {
 
 static inline void  dlxSolutionAdd(DlxSolution* solution, QList* row) {
   if (solution->rowsCapacity <= solution->rowsSize) {
-    size_t  capacity = solution->rowsSize + solution->rowsSize / 2 + 5;
+    size_t  capacity = solution->rowsSize + solution->rowsSize / 2 + 15;
     QList** rowsTmp = malloc(capacity * sizeof(QList*));
     assert(rowsTmp != NULL);
-    memcpy(rowsTmp, solution->rows, solution->rowsSize * sizeof(QList*));
-    free(solution->rows);
+    if (solution->rowsSize > 0) {
+      memcpy(rowsTmp, solution->rows, solution->rowsSize * sizeof(QList*));
+      free(solution->rows);
+    }
 
     solution->rows = rowsTmp;
     solution->rowsCapacity = capacity;
@@ -120,6 +123,26 @@ void  dlxSolutionCpy(DlxSolution* solCpy, const DlxSolution* solution) {
 void  dlxSearchFull(DlxMatrix* dlx) {
   if (dlx->root.r == &dlx->root) {
     printf("found solution\n");
+    for (size_t r = 0; r < dlx->solution.rowsSize; r++) {
+      QList* row = dlx->solution.rows[r];
+      while (row->l < row) {row = row->l;}
+      row = row->r;
+      QList* rowTmp = row->r;
+      size_t size = 1;
+      while (rowTmp != row) {
+        rowTmp = rowTmp->r;
+        size++;
+      }
+      if (size > dlx->solution.letterPerWord + 3 || size <= 1)
+        continue;
+      for (size_t c = 0; c < dlx->solution.letterPerWord; c++) {
+        char letter = row->header->id;
+        row = row->r;
+        write(1, &letter, 1);
+      }
+      write(1, "\n", 1);
+    }
+    write(1, "\n", 1);
     return ;
   }
 
@@ -148,7 +171,7 @@ int   dlxSearchFlat(DlxMatrix* dlx, int depth) {
   QList*        row;
   QListHeader*  col = dlx->root.r;
   int           minSize = col->size;
-  if (depth >= dlx->solution.rowsSize) {
+  if ((size_t)depth >= dlx->solution.rowsSize) {
     for (QListHeader* colMin = col->r; colMin != &dlx->root; colMin = colMin->r) {
       if (colMin->size < minSize) {
         minSize = colMin->size;
